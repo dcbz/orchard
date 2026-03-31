@@ -1,0 +1,18 @@
+FROM python:3.12-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    iputils-ping \
+    iproute2 \
+    net-tools \
+    dnsutils \
+    tcpdump \
+    avahi-utils \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /toolkit
+COPY mdns_core.py mdns_toolkit.py ./
+COPY attacks/ ./attacks/
+
+RUN chmod +x mdns_toolkit.py
+
+CMD ["sleep", "infinity"]

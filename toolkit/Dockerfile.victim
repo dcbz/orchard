@@ -1,0 +1,20 @@
+FROM ubuntu:24.04
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    avahi-daemon \
+    avahi-utils \
+    libnss-mdns \
+    iputils-ping \
+    iproute2 \
+    net-tools \
+    dbus \
+    && rm -rf /var/lib/apt/lists/*
+
+# Configure Avahi
+COPY victim/avahi-daemon.conf /etc/avahi/avahi-daemon.conf
+
+# Startup script: launch dbus + avahi, then register services
+COPY victim/start.sh /start.sh
+RUN chmod +x /start.sh
+
+CMD ["/start.sh"]

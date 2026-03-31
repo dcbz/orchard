@@ -1,0 +1,65 @@
+services:
+  # ── Attacker node ──────────────────────────────────────────────────────
+  attacker:
+    build:
+      context: .
+      dockerfile: Dockerfile.attacker
+    container_name: mdns-attacker
+    hostname: attacker
+    networks:
+      mdns-lab:
+        ipv4_address: 172.20.0.99
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    privileged: true
+
+  # ── Victim 1: a "file server" ─────────────────────────────────────────
+  victim1:
+    build:
+      context: .
+      dockerfile: Dockerfile.victim
+    container_name: mdns-victim1
+    hostname: fileserver
+    networks:
+      mdns-lab:
+        ipv4_address: 172.20.0.2
+    cap_add:
+      - NET_ADMIN
+    privileged: true
+
+  # ── Victim 2: a "workstation" ─────────────────────────────────────────
+  victim2:
+    build:
+      context: .
+      dockerfile: Dockerfile.victim
+    container_name: mdns-victim2
+    hostname: workstation
+    networks:
+      mdns-lab:
+        ipv4_address: 172.20.0.3
+    cap_add:
+      - NET_ADMIN
+    privileged: true
+
+  # ── Victim 3: observer/resolver (queries names, shows poisoning) ──────
+  victim3:
+    build:
+      context: .
+      dockerfile: Dockerfile.victim
+    container_name: mdns-victim3
+    hostname: laptop
+    networks:
+      mdns-lab:
+        ipv4_address: 172.20.0.4
+    cap_add:
+      - NET_ADMIN
+    privileged: true
+
+networks:
+  mdns-lab:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+          gateway: 172.20.0.1
